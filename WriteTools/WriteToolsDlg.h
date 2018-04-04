@@ -47,6 +47,9 @@ public:
 	bool CWriteToolsDlg::WriteCode_WF(CString code, int type);
 	bool CWriteToolsDlg::WriteCode_IE(CString code, int type);
 	bool CWriteToolsDlg::ReadCode();
+	//bool CWriteToolsDlg::WriteCode(CString code, int type);
+	bool CWriteToolsDlg::PortStatus();
+	bool CWriteToolsDlg::Checkcode(CString code, int type);
 	afx_msg void OnDropdownComboPort();
 	void PringMsg(CString msg);
 public:

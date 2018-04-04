@@ -114,18 +114,18 @@ bool CPort::ReadBT()
 	memset(itemdata,0,12);
 	//memset(bt, 0, 128);
 	unsigned char result = QLIB_DIAG_NV_READ_F(m_digHandle, NV_BT, itemdata,12 , &iStatus);
-	global_dlg->m_rich_msg.ReplaceSel("写入的BT MAC为：");
-	//global_dlg->PringMsg("写入的BT MAC为：");
+	//global_dlg->m_rich_msg.ReplaceSel("写入的BT MAC为：");
 	for (int i = 5; i>=0 ;i--)
 	{
 			sprintf_s(bt,"%02x", itemdata[i]);	//将十六进制数据格式化输出到字符串
-			BT = CString(bt);
-			BT.MakeUpper();	//将字符串中的小写字母转换为大写
-			global_dlg->m_rich_msg.ReplaceSel(BT);
+			BT += CString(bt);
+			//global_dlg->m_rich_msg.ReplaceSel(BT);
 	}
+	BT.MakeUpper();	//将字符串中的小写字母转换为大写
+	global_dlg->PringMsg("写入的BT MAC为："+ BT);
 //	global_dlg->m_rich_msg.ReplaceSel("写入的BT MAC为：" + BT + "\r\n");
 	/*global_dlg->m_rich_msg.ReplaceSel("\r\n");*/
-	global_dlg->PringMsg("");
+	//global_dlg->PringMsg("");
 	 return true;
 }
 
@@ -138,18 +138,18 @@ bool CPort::ReadWF()
 
 	memset(itemdata,0,12);
 	unsigned char result = QLIB_DIAG_NV_READ_F(m_digHandle, NV_WIFI, itemdata, 12, &iStatus);
-	global_dlg->m_rich_msg.ReplaceSel("写入的WIFI MAC为：");
-	//global_dlg->PringMsg("写入的WIFI MAC为：");
+	//global_dlg->m_rich_msg.ReplaceSel("写入的WIFI MAC为：");
 	for (int i = 0; i<6; i++)
 	{
 		sprintf_s(wf, "%02x", itemdata[i]);	//以十六进制形式输出，不足两位自动补零
-		WF = CString(wf);
+		WF += CString(wf);
 		//WF = char (itemdata[i]);
-		WF.MakeUpper();
-		global_dlg->m_rich_msg.ReplaceSel(WF);
+		//global_dlg->m_rich_msg.ReplaceSel(WF);
 	}
+	WF.MakeUpper();
+	global_dlg->PringMsg("写入的WIFI MAC为："+WF);
 	/*global_dlg->m_rich_msg.ReplaceSel("\r\n");*/
-	global_dlg->PringMsg("");
+	//global_dlg->PringMsg("");
 	 return true;
 }
 
@@ -212,7 +212,7 @@ bool CPort::ReadIMEI()
 
 	memset(itemdata, 0, 9);
 	unsigned char result = QLIB_DIAG_NV_READ_F(m_digHandle, NV_IMEI, itemdata, 9, &iStatus);
-	global_dlg->m_rich_msg.ReplaceSel("写入的IMEI码为：");
+	//global_dlg->m_rich_msg.ReplaceSel("写入的IMEI码为：");
 	for (int i = 1; i < 9; i++)
 	{
 		if (i == 1)
@@ -225,10 +225,11 @@ bool CPort::ReadIMEI()
 			sprintf_s(iemi, "%02x", itemdata[i]);
 		}
 
-		IMEI = CString(_strrev(iemi));	//字符倒序输出
-		global_dlg->m_rich_msg.ReplaceSel(IMEI);
+		IMEI += CString(_strrev(iemi));	//字符倒序输出
+		//global_dlg->m_rich_msg.ReplaceSel(IMEI);
 	}
-	global_dlg->PringMsg("");
+	//global_dlg->PringMsg("");
+	global_dlg->PringMsg("写入的WIFI MAC为：" + IMEI);
 	return true;
 }
 
@@ -320,7 +321,7 @@ bool CPort::WriteWIFI(CString wf)
 		itemdata[j] = ((WF[2 * j] & 0x0f)<<4) + (WF[2 * j + 1] & 0x0f);
 	}
 	unsigned char result = QLIB_DIAG_NV_WRITE_F(m_digHandle, NV_WIFI, itemdata, 6, &iStatus);
-	global_dlg->PringMsg("WIFI:"+ wf + ("已写入"));
+	//global_dlg->PringMsg("WIFI:"+ wf + ("已写入"));
 	return true;
 }
 
@@ -368,7 +369,7 @@ bool CPort::WriteIMEI(CString ie)
 				}
 			}
 	unsigned char result = QLIB_DIAG_NV_WRITE_F(m_digHandle, NV_IMEI, itemdata, 9, &iStatus);
-	global_dlg->PringMsg("IMEI:"+ie + ("已写入"));
+	//global_dlg->PringMsg("IMEI:"+ie + ("已写入"));
 	return true;
 }
 
@@ -384,5 +385,107 @@ bool CPort::WriteFlag(CString fg)
 		itemdata[i] = fg[i];
 	}
 	unsigned char result = QLIB_DIAG_NV_WRITE_F(m_digHandle, NV_FLAG, itemdata, 128, &iStatus);
+	return true;
+}
+
+bool CPort::Check(CString code,int flag)
+{
+	unsigned char itemdata[128];
+	unsigned short iStatus;
+	CString CODE;
+
+	memset(itemdata, 0, 128);
+	if (flag == NV_PSN)
+	{
+		unsigned char result = QLIB_DIAG_NV_READ_F(m_digHandle, NV_PSN, itemdata, 128, &iStatus);
+		CODE = CString(itemdata);
+		global_dlg->PringMsg("外部读取的SN值为:" + code);
+		global_dlg->PringMsg("内部写入的SN值为:" + CODE);
+		if (CODE == code)
+		{
+			global_dlg->PringMsg("SN比对PASS!");
+		}
+		else
+		{
+			global_dlg->PringMsg("SN比对FAIL，请重新确认输入值!");
+		}
+		global_dlg->m_edit_ctrl.SetWindowTextA("");
+	}
+	if (flag == NV_BT)
+	{
+		char bt[6] = {0};
+		unsigned char result = QLIB_DIAG_NV_READ_F(m_digHandle, NV_BT, itemdata, 128, &iStatus);
+		for (int i = 5; i >= 0; i--)
+		{
+			sprintf_s(bt,"%02x", itemdata[i]);	//将十六进制数据格式化输出到字符串
+			CODE += bt;
+			//global_dlg->m_rich_msg.ReplaceSel(CODE);
+		}
+		CODE.MakeUpper();              //将字符串中的小写字母转换为大写
+		global_dlg->PringMsg("外部读取的BT值为:" + code);
+		global_dlg->PringMsg("内部写入的BT值为:" + CODE);
+		if (CODE == code)
+		{
+			global_dlg->PringMsg("BT比对PASS!");
+		}
+		else
+		{
+			global_dlg->PringMsg("BT比对FAIL，请重新确认输入值!");
+		}
+		global_dlg->m_edit_btctrl.SetWindowTextA("");
+	}
+	if (flag == NV_WIFI)
+	{
+		char wf[6] = {0};
+		unsigned char result = QLIB_DIAG_NV_READ_F(m_digHandle, NV_WIFI, itemdata, 12, &iStatus);
+		for (int i = 0; i<6; i++)
+		{
+			sprintf_s(wf, "%02x", itemdata[i]);	//以十六进制形式输出，不足两位自动补零
+			CODE += CString(wf);
+		}
+		CODE.MakeUpper();
+		global_dlg->PringMsg("外部读取的WIFI值为:" + code);
+		global_dlg->PringMsg("内部写入的WIFI值为:" + CODE);
+		if (CODE == code)
+		{
+			global_dlg->PringMsg("WIFI比对PASS!");
+		}
+		else
+		{
+			global_dlg->PringMsg("WIFI比对FAIL，请重新确认输入值!");
+		}
+		global_dlg->m_edit_wfctrl.SetWindowTextA("");
+	}
+	if (flag == NV_IMEI)
+	{
+		char iemi[9];
+		unsigned char result = QLIB_DIAG_NV_READ_F(m_digHandle, NV_IMEI, itemdata, 12, &iStatus);
+		for (int i = 1; i < 9; i++)
+		{
+			if (i == 1)
+			{
+				itemdata[i] = (itemdata[i] & 0xf0) >> 4;
+				sprintf_s(iemi, "%x", itemdata[i]);
+			}
+			else
+			{
+				sprintf_s(iemi, "%02x", itemdata[i]);
+			}
+
+			CODE += CString(_strrev(iemi));	//字符倒序输出
+		}
+		CODE.MakeUpper();
+		global_dlg->PringMsg("外部读取的IMEI1值为:" + code);
+		global_dlg->PringMsg("内部写入的IMEI1值为:" + CODE);
+		if (CODE == code)
+		{
+			global_dlg->PringMsg("IMEI1比对PASS!");
+		}
+		else
+		{
+			global_dlg->PringMsg("IMEI1比对FAIL，请重新确认输入值!");
+		}
+		global_dlg->m_edit_imctrl1.SetWindowTextA("");
+	}
 	return true;
 }

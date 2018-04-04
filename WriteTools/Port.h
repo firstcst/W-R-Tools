@@ -39,6 +39,7 @@ public:
 	bool CPort::WriteWIFI(CString wf);
 	bool CPort::WriteIMEI(CString ie);
 	bool CPort::WriteFlag(CString fg);
+	bool CPort::Check(CString code, int flag);
 };
 
 

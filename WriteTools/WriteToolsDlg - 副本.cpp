@@ -234,11 +234,11 @@ bool CWriteToolsDlg::ReadCode()
 	}
 	if (1 == m_check4.GetCheck())
 	{
-		m_comprt.ReadIMEI();
+		m_comprt.ReadIMEI();	//调用ReadIMEI
 	}
 	if (1 == m_check6.GetCheck())
 	{
-		m_comprt.ReadFLAG();
+		m_comprt.ReadFLAG();	//调用ReadFLAG
 	}
 	return true;
 }
@@ -249,60 +249,6 @@ void Read_CODE(LPVOID parm)
 	dlg->ReadCode();
 }
 
-//void Write_CODE(LPVOID parm)
-//{
-//	CWriteToolsDlg *dlg1 = (CWriteToolsDlg *)parm;
-//	if(1 == dlg1->m_check1.GetCheck())
-//	{
-//		int len = dlg1->m_edit_sn.GetLength();;
-//		unsigned char str;
-//
-//		if (len == 15)
-//		{
-//			for (int i = 0; i < len; )
-//			{
-//				str = (dlg1->m_edit_sn.GetAt(i));
-//				if ((str >= 'A'&&str <= 'Z') || (str >= '0'&&str <= '9'))
-//				{
-//					if (i == len - 1)
-//					{
-//						dlg1->WriteCode_SN(dlg1->m_edit_sn, 0);
-//						break;
-//					}
-//					else
-//					{
-//						i++;
-//					}
-//				}
-//				else
-//				{
-//					//global_dlg->m_rich_msg.SetWindowTextA("输入内容不符合要求！\r\n");
-//					global_dlg->PringMsg("输入内容不符合要求,请输入大写字母与数字组合！");
-//					dlg1->m_edit_ctrl.SetWindowTextA("");
-//					break;
-//				}
-//			}
-//		}
-//		else
-//		{
-//			//global_dlg->m_rich_msg.SetWindowTextA("输入内容未达设定位数！\r\n");
-//			if (len == 0)
-//			{
-//				global_dlg->PringMsg("输入内容不能为空！");
-//				dlg1->m_edit_ctrl.SetWindowTextA("");
-//			}
-//			else
-//			{
-//				global_dlg->PringMsg("输入内容长度有误！");
-//				dlg1->m_edit_ctrl.SetWindowTextA("");
-//			}
-//		}
-//	}
-//	if (1 == dlg1->m_check2.GetCheck())
-//	{
-//		//Write_BT();
-//	}
-//}
 bool CWriteToolsDlg::WriteCode_SN(CString code, int type)
 {
 	CString port;
@@ -633,11 +579,26 @@ void CWriteToolsDlg::OnBnClickedOk()
 	//CDialogEx::OnOK();
 	UpdateData(true);
 	DWORD dThreadId;  //句柄
-	//if(((CButton *)GetDlgItem(IDC_READ_RADIO))->GetCheck())
-	//{
+	if(((CButton *)GetDlgItem(IDC_READ_RADIO))->GetCheck())
+	{
 		hHandle = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Read_CODE, this, NULL, &dThreadId);
+	}
+	if (((CButton *)GetDlgItem(IDC_WRITE_RADIO))->GetCheck())
+	{
+		hHandle = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Write_SN, this, NULL, &dThreadId);
+	}
+	//if (((CButton *)GetDlgItem(IDC_WRITE_RADIO))->GetCheck() && m_check2.GetCheck())
+	//{
+	//	hHandle = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Write_BT, this, NULL, &dThreadId);
 	//}
-
+	//if (((CButton *)GetDlgItem(IDC_WRITE_RADIO))->GetCheck() && m_check3.GetCheck())
+	//{
+	//	hHandle = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Write_WF, this, NULL, &dThreadId);
+	//}
+	//if (((CButton *)GetDlgItem(IDC_WRITE_RADIO))->GetCheck() && m_check4.GetCheck())
+	//{
+	//	hHandle = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Write_IMEI, this, NULL, &dThreadId);
+	//}
 	UpdateData(false);
 }
 

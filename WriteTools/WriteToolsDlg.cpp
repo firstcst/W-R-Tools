@@ -56,7 +56,7 @@ CWriteToolsDlg::CWriteToolsDlg(CWnd* pParent /*=NULL*/)
 	, m_edit_wf(_T(""))
 	, m_edit_imei1(_T(""))
 	, m_edit_imei2(_T(""))
-	, m_readradio_ctrl(0)
+//	, m_readradio_ctrl(0)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -141,6 +141,7 @@ BOOL CWriteToolsDlg::OnInitDialog()
 	//((CButton *)GetDlgItem(IDC_READ_RADIO))->SetCheck(TRUE);
 	global_dlg->OnWriteRadio();	//初始化状态为写号。
 	CheckRadioButton(IDC_WRITE_RADIO, IDC_CHECK_RADIO, IDC_WRITE_RADIO);
+	m_check1.SetCheck(1);
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -200,7 +201,7 @@ void CWriteToolsDlg::OnDropdownComboPort()
 	//CPort m_comprt;
 	m_comprt.EunmPort();
 }
-
+//读取模块
 bool CWriteToolsDlg::ReadCode()
 {
 	CString port;
@@ -234,11 +235,11 @@ bool CWriteToolsDlg::ReadCode()
 	}
 	if (1 == m_check4.GetCheck())
 	{
-		m_comprt.ReadIMEI();
+		m_comprt.ReadIMEI();	//调用ReadIMEI
 	}
 	if (1 == m_check6.GetCheck())
 	{
-		m_comprt.ReadFLAG();
+		m_comprt.ReadFLAG();	//调用ReadFLAG
 	}
 	return true;
 }
@@ -249,61 +250,7 @@ void Read_CODE(LPVOID parm)
 	dlg->ReadCode();
 }
 
-//void Write_CODE(LPVOID parm)
-//{
-//	CWriteToolsDlg *dlg1 = (CWriteToolsDlg *)parm;
-//	if(1 == dlg1->m_check1.GetCheck())
-//	{
-//		int len = dlg1->m_edit_sn.GetLength();;
-//		unsigned char str;
-//
-//		if (len == 15)
-//		{
-//			for (int i = 0; i < len; )
-//			{
-//				str = (dlg1->m_edit_sn.GetAt(i));
-//				if ((str >= 'A'&&str <= 'Z') || (str >= '0'&&str <= '9'))
-//				{
-//					if (i == len - 1)
-//					{
-//						dlg1->WriteCode_SN(dlg1->m_edit_sn, 0);
-//						break;
-//					}
-//					else
-//					{
-//						i++;
-//					}
-//				}
-//				else
-//				{
-//					//global_dlg->m_rich_msg.SetWindowTextA("输入内容不符合要求！\r\n");
-//					global_dlg->PringMsg("输入内容不符合要求,请输入大写字母与数字组合！");
-//					dlg1->m_edit_ctrl.SetWindowTextA("");
-//					break;
-//				}
-//			}
-//		}
-//		else
-//		{
-//			//global_dlg->m_rich_msg.SetWindowTextA("输入内容未达设定位数！\r\n");
-//			if (len == 0)
-//			{
-//				global_dlg->PringMsg("输入内容不能为空！");
-//				dlg1->m_edit_ctrl.SetWindowTextA("");
-//			}
-//			else
-//			{
-//				global_dlg->PringMsg("输入内容长度有误！");
-//				dlg1->m_edit_ctrl.SetWindowTextA("");
-//			}
-//		}
-//	}
-//	if (1 == dlg1->m_check2.GetCheck())
-//	{
-//		//Write_BT();
-//	}
-//}
-bool CWriteToolsDlg::WriteCode_SN(CString code, int type)
+/*bool CWriteToolsDlg::WriteCode_SN(CString code, int type)
 {
 	CString port;
 	int idx = m_com_port.GetCurSel();	//com port选定与否返回值，-1为未做选择。
@@ -460,7 +407,6 @@ void Write_SN(LPVOID parm)
 			}
 			else
 			{
-				//global_dlg->m_rich_msg.SetWindowTextA("输入内容不符合要求！\r\n");
 				global_dlg->PringMsg("输入内容不符合要求,请输入大写字母与数字组合！");
 				dlg1->m_edit_ctrl.SetWindowTextA("");
 				break;
@@ -469,7 +415,6 @@ void Write_SN(LPVOID parm)
 	}
 	else
 	{
-		//global_dlg->m_rich_msg.SetWindowTextA("输入内容未达设定位数！\r\n");
 		if (len == 0)
 		{
 			global_dlg->PringMsg("输入内容不能为空！");
@@ -480,7 +425,6 @@ void Write_SN(LPVOID parm)
 			global_dlg->PringMsg("输入内容长度有误！");
 			dlg1->m_edit_ctrl.SetWindowTextA("");
 		}
-		//global_dlg->PringMsg("输入内容未达设定位数！");
 	}
 }
 
@@ -509,7 +453,6 @@ void Write_BT(LPVOID parm)
 			}
 			else
 			{
-				//global_dlg->m_rich_msg.SetWindowTextA("输入内容不符合要求！\r\n");
 				global_dlg->PringMsg("输入内容不符合要求,请输入大写字母与数字组合！");
 				dlg1->m_edit_ctrl.SetWindowTextA("");
 				break;
@@ -518,7 +461,6 @@ void Write_BT(LPVOID parm)
 	}
 	else
 	{
-		//global_dlg->m_rich_msg.SetWindowTextA("输入内容未达设定位数！\r\n");
 		if (len == 0)
 		{
 			global_dlg->PringMsg("输入内容不能为空！");
@@ -529,7 +471,6 @@ void Write_BT(LPVOID parm)
 			global_dlg->PringMsg("输入内容长度有误！");
 			dlg1->m_edit_ctrl.SetWindowTextA("");
 		}
-		//global_dlg->PringMsg("输入内容未达设定位数！");
 	}
 }
 
@@ -626,18 +567,363 @@ void Write_IMEI(LPVOID parm)
 		//global_dlg->PringMsg("输入内容未达设定位数！");
 	}
 }
+*/
+//写号模块
+bool CWriteToolsDlg::WriteCode_SN(CString code, int type)
+{
+	//CString port;
+	//int idx = m_com_port.GetCurSel();	//com port选定与否返回值，-1为未做选择。
 
+	//if (idx != -1)
+	//{
+	//	m_com_port.GetLBText(idx, port);	//将获得的com port值存到idx中。
+	//}
+	//else
+	//{
+	//	global_dlg->PringMsg("未选择com port!");
+	//	//global_dlg->m_edit_ctrl.SetWindowTextA("");
+	//	return false;
+	//}
+	//if (!m_comprt.OpenPort(port, 5))
+	//{
+	//	return false;
+	//}
+	code.MakeUpper();
+	m_comprt.WritePSN(code);
+	PringMsg("SN:"+code + ("已写入"));
+	m_edit_ctrl.SetWindowTextA("");	//编辑框内容清除
+
+	return true;
+}
+
+bool CWriteToolsDlg::WriteCode_BT(CString code, int type)
+{
+	//CString port;
+	//int idx = m_com_port.GetCurSel();	//com port选定与否返回值，-1为未做选择。
+
+	//if (idx != -1)
+	//{
+	//	m_com_port.GetLBText(idx, port);	//将获得的com port值存到idx中。
+	//}
+	//else
+	//{
+	//	global_dlg->PringMsg("未选择com port!");
+	//}
+	//if (!m_comprt.OpenPort(port, 5))
+	//{
+	//	return false;
+	//}
+	code.MakeUpper();
+	m_comprt.WriteBT(code);
+	PringMsg("BT:"+code+"已写入");
+	m_edit_btctrl.SetWindowTextA("");
+	return true;
+}
+
+bool CWriteToolsDlg::WriteCode_WF(CString code, int type)
+{
+	//CString port;
+	//int idx = m_com_port.GetCurSel();	//com port选定与否返回值，-1为未做选择。
+	//unsigned int len = code.GetLength();
+	//if (idx != -1)
+	//{
+	//	m_com_port.GetLBText(idx, port);	//将获得的com port值存到idx中。
+	//}
+	//else
+	//{
+	//	global_dlg->PringMsg("未选择com port!");
+	//}
+	//if (!m_comprt.OpenPort(port, 5))
+	//{
+	//	return false;
+	//}
+	code.MakeUpper();
+	m_comprt.WriteWIFI(code);
+	PringMsg("WIFI:"+code+"已写入");
+    m_edit_wfctrl.SetWindowTextA("");
+	return true;
+}
+
+bool CWriteToolsDlg::WriteCode_IE(CString code, int type)
+{
+	//CString port;
+	//int idx = m_com_port.GetCurSel();	//com port选定与否返回值，-1为未做选择。
+	//unsigned int len = code.GetLength();
+	//if (idx != -1)
+	//{
+	//	m_com_port.GetLBText(idx, port);	//将获得的com port值存到idx中。
+	//}
+	//else
+	//{
+	//	//m_rich_msg.SetWindowTextA("未选择com port!");
+	//	//m_rich_msg.ReplaceSel("未选择com port!\r\n" );
+	//	global_dlg->PringMsg("未选择com port!");
+	//}
+	//if (!m_comprt.OpenPort(port, 5))
+	//{
+	//	return false;
+	//}
+	m_comprt.WriteIMEI(code);
+	PringMsg("IMEI:"+code+"已写入");
+	m_edit_imctrl1.SetWindowTextA("");
+	return true;
+}
+
+bool CWriteToolsDlg::PortStatus()
+{
+	CString port;
+	int idx = m_com_port.GetCurSel();	//com port选定与否返回值，-1为未做选择。
+	//unsigned int len = code.GetLength();
+	if (idx != -1)
+	{
+		m_com_port.GetLBText(idx, port);	//将获得的com port值存到idx中。
+	}
+	else
+	{
+		global_dlg->PringMsg("未选择com port!");
+	}
+	if (!m_comprt.OpenPort(port, 5))
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+}
+
+void Write_CODE(LPVOID parm)
+{
+	CWriteToolsDlg *dlg = (CWriteToolsDlg *)parm;
+	if (dlg->PortStatus())
+	{
+		if (1 == dlg->m_check1.GetCheck())
+		{
+			int len = dlg->m_edit_sn.GetLength();;
+			unsigned char str;
+
+			if (len == 15)
+			{
+				for (int i = 0; i < len; )
+				{
+					str = (dlg->m_edit_sn.GetAt(i));
+
+					if ((str >= 'A'&&str <= 'Z') || (str >= '0'&&str <= '9') || (str >= 'a'&&str <= 'z'))
+					{
+						if (i == len - 1)
+						{
+							dlg->WriteCode_SN(dlg->m_edit_sn, 0);
+							break;
+						}
+						else
+						{
+							i++;
+						}
+					}
+					else
+					{
+						global_dlg->PringMsg("输入内容不符合要求,请输入大写字母与数字组合！");
+						dlg->m_edit_ctrl.SetWindowTextA("");
+						break;
+					}
+				}
+			}
+			else
+			{
+				if (len == 0)
+				{
+					global_dlg->PringMsg("输入内容不能为空！");
+					dlg->m_edit_ctrl.SetWindowTextA("");
+				}
+				else
+				{
+					global_dlg->PringMsg("输入内容长度有误！");
+					dlg->m_edit_ctrl.SetWindowTextA("");
+				}
+			}
+		}
+		if (1 == dlg->m_check2.GetCheck())
+		{
+			int len = dlg->m_edit_bt.GetLength();;
+			unsigned char str;
+
+			if (len == 12)
+			{
+				for (int i = 0; i < len; )
+				{
+					str = (dlg->m_edit_bt.GetAt(i));
+					if ((str >= 'A'&&str <= 'F') || (str >= '0'&&str <= '9') || (str >= 'a'&&str <= 'f'))
+					{
+						if (i == len - 1)
+						{
+							dlg->WriteCode_BT(dlg->m_edit_bt, 0);
+							break;
+						}
+						else
+						{
+							i++;
+						}
+					}
+					else
+					{
+						global_dlg->PringMsg("输入内容不符合要求,请输入大写字母与数字组合！");
+						dlg->m_edit_ctrl.SetWindowTextA("");
+						break;
+					}
+				}
+			}
+			else
+			{
+				if (len == 0)
+				{
+					global_dlg->PringMsg("输入内容不能为空！");
+					dlg->m_edit_ctrl.SetWindowTextA("");
+				}
+				else
+				{
+					global_dlg->PringMsg("输入内容长度有误！");
+					dlg->m_edit_ctrl.SetWindowTextA("");
+				}
+			}
+		}
+		if (1 == dlg->m_check3.GetCheck())
+		{
+			//dlg->WriteCode_WF(dlg->m_edit_wf, 0);
+			int len = dlg->m_edit_wf.GetLength();
+			unsigned char str;
+			if (len == 12)
+			{
+				for (int i = 0; i < len; )
+				{
+					str = (dlg->m_edit_wf.GetAt(i));
+					if ((str >= 'A'&&str <= 'F') || (str >= '0'&&str <= '9') || (str >= 'a'&&str <= 'f'))
+					{
+						if (i == 11)
+						{
+							dlg->WriteCode_WF(dlg->m_edit_wf, 0);
+							break;
+						}
+						else
+						{
+							i++;
+						}
+					}
+					else
+					{
+						//global_dlg->m_rich_msg.SetWindowTextA("输入内容不符合要求！\r\n");
+						global_dlg->PringMsg("输入内容不符合要求,请重新输入！");
+						break;
+					}
+				}
+			}
+			else
+			{
+				//global_dlg->m_rich_msg.SetWindowTextA("输入内容未达设定位数！\r\n");
+				if (len == 0)
+				{
+					global_dlg->PringMsg("输入内容不能为空！");
+				}
+				else
+				{
+					global_dlg->PringMsg("输入内容未达设定位数！");
+				}
+				//global_dlg->PringMsg("输入内容未达设定位数！");
+			}
+		}
+		if (1 == dlg->m_check4.GetCheck())
+		{
+			//dlg->WriteCode_IE(dlg->m_edit_imei1, 0);
+			int len = dlg->m_edit_imei1.GetLength();
+			unsigned char str;
+			if (len == 14)
+			{
+				for (int i = 0; i < len; )
+				{
+					str = (dlg->m_edit_imei1.GetAt(i));
+					if ((str >= '0'&&str <= '9') && (dlg->m_edit_imei1.GetAt(0) == '8') && (dlg->m_edit_imei1.GetAt(1) == '6'))
+					{
+						if (i == 13)
+						{
+							dlg->WriteCode_IE(dlg->m_edit_imei1, 0);
+							break;
+						}
+						else
+						{
+							i++;
+						}
+					}
+					else
+					{
+						//global_dlg->m_rich_msg.SetWindowTextA("输入内容不符合要求！\r\n");
+						global_dlg->PringMsg("输入内容有误！请输入以86开头的十四位数字组合！");
+						break;
+					}
+				}
+			}
+			else
+			{
+				//global_dlg->m_rich_msg.SetWindowTextA("输入内容未达设定位数！\r\n");
+				if (len == 0)
+				{
+					global_dlg->PringMsg("输入内容不能为空！");
+				}
+				else
+				{
+					global_dlg->PringMsg("输入内容未达设定位数！");
+				}
+				//global_dlg->PringMsg("输入内容未达设定位数！");
+			}
+		}
+	}
+}
+
+//Check模块
+bool CWriteToolsDlg::Checkcode(CString code, int type)
+{
+		m_comprt.Check(code,type);
+		return true;
+}
+void Check_CODE(LPVOID parm)
+{
+	CWriteToolsDlg *dlg = (CWriteToolsDlg *)parm;
+	if (dlg->PortStatus())
+	{
+		if (1 == dlg->m_check1.GetCheck())
+		{
+			dlg->Checkcode(dlg->m_edit_sn, NV_PSN);
+		}
+		if (1 == dlg->m_check2.GetCheck())
+		{
+			dlg->Checkcode(dlg->m_edit_bt, NV_BT);
+		}
+		if (1 == dlg->m_check3.GetCheck())
+		{
+			dlg->Checkcode(dlg->m_edit_wf, NV_WIFI);
+		}
+		if (1 == dlg->m_check4.GetCheck())
+		{
+			dlg->Checkcode(dlg->m_edit_imei1, NV_IMEI);
+		}
+	}
+}
 void CWriteToolsDlg::OnBnClickedOk()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	//CDialogEx::OnOK();
 	UpdateData(true);
 	DWORD dThreadId;  //句柄
-	//if(((CButton *)GetDlgItem(IDC_READ_RADIO))->GetCheck())
-	//{
+	if(((CButton *)GetDlgItem(IDC_READ_RADIO))->GetCheck())
+	{
 		hHandle = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Read_CODE, this, NULL, &dThreadId);
-	//}
-
+	}
+	if (((CButton *)GetDlgItem(IDC_WRITE_RADIO))->GetCheck())
+	{
+		hHandle = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Write_CODE, this, NULL, &dThreadId);
+	}
+	if (((CButton *)GetDlgItem(IDC_CHECK_RADIO))->GetCheck())
+	{
+		hHandle = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Check_CODE, this, NULL, &dThreadId);
+	}
 	UpdateData(false);
 }
 
